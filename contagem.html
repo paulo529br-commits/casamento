@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contagem Regressiva – Nosso Casamento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg1: #fff5f7;
+      --bg2: #fde2e4;
+      --rose: #c43d5c;
+      --rose-600: #a92f4b;
+      --ink: #2a2a2a;
+      --muted: #6b7280;
+      --card: rgba(255,255,255,0.72);
+      --border: rgba(255,255,255,0.45);
+      --shadow: 0 25px 45px rgba(0,0,0,.08), 0 8px 16px rgba(196,61,92,.10);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(1200px 800px at 80% -10%, var(--bg2), transparent),
+                  radial-gradient(1200px 800px at -10% 110%, #fdf2f8, transparent),
+                  linear-gradient(135deg, var(--bg1), #fff);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+    }
+    .wrap {
+      width: min(980px, 92vw);
+      padding: 28px;
+    }
+    .card {
+      position: relative;
+      background: var(--card);
+      backdrop-filter: saturate(140%) blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: clamp(22px, 4vw, 40px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* Decorative hearts */
+    .heart { position: absolute; opacity: .15; }
+    .heart svg { width: 140px; height: 140px; }
+    .h1 { top: -10px; right: -10px; transform: rotate(-18deg); }
+    .h2 { bottom: -20px; left: -10px; transform: rotate(12deg); }
+
+    header {
+      text-align: center;
+      margin-bottom: clamp(18px, 3vw, 28px);
+    }
+    .kicker {
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--rose);
+      font-weight: 600;
+      font-size: .82rem;
+    }
+    h1 {
+      font-family: "Playfair Display", serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.15;
+      margin: 8px 0 10px;
+      color: var(--rose-600);
+    }
+    .subtitle { color: var(--muted); font-size: clamp(.95rem, 2.1vw, 1.05rem); }
+
+    .timer {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(10px, 2vw, 16px);
+      margin: clamp(14px, 2.5vw, 22px) 0 clamp(12px, 2.5vw, 22px);
+    }
+    .unit {
+      background: linear-gradient(180deg, #fff, #fff9fb);
+      border: 1px solid #f4e4ea;
+      border-radius: 22px;
+      padding: clamp(14px, 3vw, 22px);
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(196,61,92,.08);
+    }
+    .value {
+      font-variant-numeric: tabular-nums lining-nums;
+      font-feature-settings: "tnum" on, "lnum" on;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(1.8rem, 6vw, 3.2rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .label { margin-top: 6px; color: var(--muted); font-size: .9rem; }
+
+    .progress {
+      height: 8px;
+      background: #f8e5ea;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff9bb2, #d94c6b); }
+
+    .footer {
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+      margin-top: 8px;
+    }
+    .tz { color: var(--muted); font-size: .88rem; }
+
+    .cta {
+      margin-top: 6px;
+      display: inline-block;
+      background: linear-gradient(135deg, #d94c6b, #c43d5c);
+      color: white; text-decoration: none; font-weight: 600;
+      padding: 12px 18px; border-radius: 999px; box-shadow: 0 10px 20px rgba(196,61,92,.25);
+      transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+    .cta:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(196,61,92,.3); }
+
+    /* Celebration state */
+    .celebrate h1 { color: #0f5132; }
+    .celebrate .subtitle { color: #198754; }
+
+    /* Floating hearts animation */
+    .float-hearts { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .float-hearts span {
+      position: absolute; bottom: -20px; font-size: 18px; opacity: .55;
+      animation: rise 6s linear infinite;
+    }
+    @keyframes rise {
+      0% { transform: translateY(0) translateX(0) scale(1); opacity: .4; }
+      60% { opacity: .9; }
+      100% { transform: translateY(-120vh) translateX(var(--x, 0)) scale(1.2); opacity: 0; }
+    }
+
+    @media (max-width: 520px) {
+      .label { font-size: .82rem; }
+      .value { font-size: clamp(1.6rem, 9vw, 2.2rem); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <!-- Decorative hearts -->
+      <div class="heart h1" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21s-7.5-4.35-9.75-8.7C-0.43 7.27 4.18 2.3 8.52 5.2 9.6 5.93 10.8 7.2 12 8.9c1.2-1.7 2.4-2.97 3.48-3.7 4.34-2.9 8.95 2.07 6.27 7.1C19.5 16.65 12 21 12 21z" fill="#c43d5c"/></svg>
+      </div>
+      <div class="heart h2" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21s-7.5-4.35-9.75-8.7C-0.43 7.27 4.18 2.3 8.52 5.2 9.6 5.93 10.8 7.2 12 8.9c1.2-1.7 2.4-2.97 3.48-3.7 4.34-2.9 8.95 2.07 6.27 7.1C19.5 16.65 12 21 12 21z" fill="#c43d5c"/></svg>
+      </div>
+
+      <header>
+        <div class="kicker">Contagem regressiva</div>
+        <h1>Nosso grande dia</h1>
+        <p class="subtitle">Cerimônia em <strong>07/03/2025</strong> às <strong>10:00</strong> — Horário de Brasília (GMT-3)</p>
+      </header>
+
+      <section class="timer" aria-live="polite">
+        <div class="unit">
+          <div class="value" id="days">–</div>
+          <div class="label">dias</div>
+          <div class="progress"><div class="bar" id="bar-days"></div></div>
+        </div>
+        <div class="unit">
+          <div class="value" id="hours">–</div>
+          <div class="label">horas</div>
+          <div class="progress"><div class="bar" id="bar-hours"></div></div>
+        </div>
+        <div class="unit">
+          <div class="value" id="minutes">–</div>
+          <div class="label">minutos</div>
+          <div class="progress"><div class="bar" id="bar-minutes"></div></div>
+        </div>
+        <div class="unit">
+          <div class="value" id="seconds">–</div>
+          <div class="label">segundos</div>
+          <div class="progress"><div class="bar" id="bar-seconds"></div></div>
+        </div>
+      </section>
+
+      <div class="footer">
+        <div class="tz" id="tz">Marcado em America/Sao_Paulo</div>
+        <!-- Exemplo de CTA: substitua o href -->
+        <!-- <a class="cta" href="#lista-presentes">Ver lista de presentes</a> -->
+      </div>
+
+      <!-- Floating hearts -->
+      <div class="float-hearts" aria-hidden="true" id="float-hearts"></div>
+    </div>
+  </div>
+
+  <script>
+    // === Configuração do evento ===
+    // Evento em 07/03/2025 às 10:00 no fuso de São Paulo (Brasil)
+    // Brasil atualmente utiliza UTC-3 sem horário de verão.
+    const eventISO = '2025-03-07T10:00:00-03:00';
+    const target = new Date(eventISO);
+
+    // Utilidades
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    // Elementos
+    const $days = document.getElementById('days');
+    const $hours = document.getElementById('hours');
+    const $minutes = document.getElementById('minutes');
+    const $seconds = document.getElementById('seconds');
+    const $barDays = document.getElementById('bar-days');
+    const $barHours = document.getElementById('bar-hours');
+    const $barMinutes = document.getElementById('bar-minutes');
+    const $barSeconds = document.getElementById('bar-seconds');
+    const $card = document.getElementById('card');
+    const $tz = document.getElementById('tz');
+
+    // Mostra fuso do visitante (contexto) e o fuso do evento
+    try {
+      const visitorTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'local';
+      $tz.textContent = `Marcado em America/Sao_Paulo • Agora no seu fuso: ${visitorTZ}`;
+    } catch(e) {}
+
+    // Animação de corações flutuantes
+    const hearts = '❤♡❥❣'.split('');
+    const $float = document.getElementById('float-hearts');
+    for (let i = 0; i < 16; i++) {
+      const span = document.createElement('span');
+      span.textContent = hearts[i % hearts.length];
+      span.style.left = Math.random() * 100 + '%';
+      span.style.animationDelay = (Math.random() * 6) + 's';
+      span.style.setProperty('--x', (Math.random() * 80 - 40) + 'px');
+      $float.appendChild(span);
+    }
+
+    // Progresso relativo
+    const HOUR = 1000 * 60 * 60;
+    const MIN = 1000 * 60;
+    const SEC = 1000;
+
+    function update() {
+      const now = new Date();
+      let diff = target.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        // Chegou o grande dia!
+        $days.textContent = '00';
+        $hours.textContent = '00';
+        $minutes.textContent = '00';
+        $seconds.textContent = '00';
+        $barDays.style.width = '100%';
+        $barHours.style.width = '100%';
+        $barMinutes.style.width = '100%';
+        $barSeconds.style.width = '100%';
+        celebrate();
+        clearInterval(timer);
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      diff -= d * 24 * HOUR;
+      const h = Math.floor(diff / HOUR);
+      diff -= h * HOUR;
+      const m = Math.floor(diff / MIN);
+      diff -= m * MIN;
+      const s = Math.floor(diff / SEC);
+
+      $days.textContent = String(d).padStart(2, '0');
+      $hours.textContent = pad(h);
+      $minutes.textContent = pad(m);
+      $seconds.textContent = pad(s);
+
+      // Barras de progresso
+      $barSeconds.style.width = (s / 60) * 100 + '%';
+      $barMinutes.style.width = (m / 60) * 100 + '%';
+      $barHours.style.width = (h / 24) * 100 + '%';
+
+      // Para dias, calcule progresso dentro do mês corrente até o evento
+      const nowMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const eventMonthStart = new Date(target.getFullYear(), target.getMonth(), 1);
+      if (now < target && nowMonthStart.getTime() === eventMonthStart.getTime()) {
+        const totalDaysMonth = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+        const dayOfMonthNow = now.getDate();
+        const dayOfMonthEvent = target.getDate();
+        const span = Math.max(dayOfMonthEvent - 1, 1);
+        const progressed = Math.min(dayOfMonthNow - 1, span);
+        $barDays.style.width = (progressed / span) * 100 + '%';
+      } else {
+        $barDays.style.width = '0%';
+      }
+    }
+
+    function celebrate() {
+      $card.classList.add('celebrate');
+      document.querySelector('h1').textContent = 'Chegou o grande dia!';
+      document.querySelector('.subtitle').innerHTML = 'Nos vemos às <strong>10:00</strong> — que seja inesquecível!';
+    }
+
+    // Primeira atualização imediata
+    update();
+    const timer = setInterval(update, 1000);
+  </script>
+</body>
+</html>
