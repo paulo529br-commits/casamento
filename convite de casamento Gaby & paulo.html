@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Convite — Gabriele & Paulo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #f8f3f0;
+      --accent: #a45b5b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: Inter, system-ui, Segoe UI, Roboto, Arial; background: var(--bg); color: #333; }
+
+    /* Envelope Styles */
+    .envelope-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background-image: url('https://image.pollinations.ai/prompt/watercolor%20floral%20background');
+      background-size: cover; background-position: center;
+      z-index: 1000; transition: opacity 0.8s ease;
+    }
+    .envelope-wrapper {
+      position: relative;
+      width: 320px; height: 220px;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+    .envelope-wrapper:hover { transform: translateY(-5px); }
+    .envelope { position: absolute; width: 100%; height: 100%; background-color: #fdf6f0; }
+    .envelope .flap {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 3; transform-origin: top;
+        transition: transform 0.8s ease;
+        border-width: 110px 160px 0 160px;
+        border-style: solid;
+        border-color: #e0c2a2 transparent transparent transparent;
+    }
+    .envelope-wrapper.open .flap { transform: rotateX(180deg); }
+    .envelope .back {
+        position: absolute; bottom: 0; left: 0;
+        width: 100%; height: 100%;
+        border-width: 0 160px 110px 160px;
+        border-style: solid;
+        border-color: transparent transparent #ead8c6 transparent;
+        z-index: 1;
+    }
+    .letter {
+        position: absolute; top: 0; left: 50%;
+        transform: translateX(-50%);
+        width: 280px; height: 100%;
+        background: #ffffff; padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        transition: top 0.8s ease, z-index 0.1s ease 0.7s;
+        z-index: 2;
+    }
+    .letter.open { top: -150px; z-index: 4; }
+    .envelope-content {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      z-index: 4; pointer-events: none;
+      transition: opacity 0.3s ease;
+      margin-top: 50px;
+    }
+    .envelope-wrapper.open .envelope-content { opacity: 0; }
+    .envelope-message {
+      color: #333; font-family: 'Playfair Display', serif;
+      font-size: 1.1em; text-align: center;
+    }
+    .envelope-guest-name {
+      color: var(--accent);
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.8em; text-align: center; margin-top: 5px;
+    }
+    .envelope-seal {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px; height: 50px;
+      background-color: var(--accent);
+      border-radius: 50%; display: flex;
+      justify-content: center; align-items: center;
+      color: #fff; font-family: 'Great Vibes', cursive;
+      font-size: 1.5em;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 5; transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .envelope-wrapper.open .envelope-seal { opacity: 0; transform: scale(0.5); }
+
+    /* Carta */
+    .page {
+      display: none; min-height: 100vh;
+      justify-content: center; align-items: center;
+      padding: 10px; background: var(--bg);
+      animation: fadeIn 1s ease forwards;
+    }
+    .card {
+      width: 100%; max-width: 600px;
+      aspect-ratio: 3/4; /* mantém proporção */
+      background: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgnZWRhUaMGKsXDakoKWDhnV61SqUXX5yXFLO-AN7cw-0vMifahE-XZ0ckxwMuwaAbgTeKOPNiz_GDRUEN3vrBXywiZmlzwwKeGKGog2YRsSSZMp97CcYt1ejUwoDyMzrTVBO1ud0_H8qrv3H5lXm7aWT6OXyup7CX51zI4IQM4exX0NDyEYbZEJ0ImZDrb//0adadc5fcdf692ceec209ae3b022dbc9.png') no-repeat center top;
+      background-size: contain;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      position: relative; text-align: center;
+    }
+
+    /* Botões */
+    .links {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      width: 90%;
+    }
+
+    .link-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.85);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+      border-radius: 25px;
+      font-size: 0.95em;
+      transition: 0.3s;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .link-button:hover {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
+    .link-button .fa-solid {
+      font-size: 1.1em;
+      color: var(--accent);
+    }
+
+    .link-button:hover .fa-solid {
+      color: #fff;
+    }
+
+    /* Ajustes extras para telas menores */
+    @media (max-width: 480px) {
+      .card {
+        aspect-ratio: 2.8/4;
+      }
+      .link-button {
+        font-size: 0.9em;
+        padding: 8px 16px;
+      }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <audio id="background-music" loop>
+    <source src="URL_DA_SUA_MUSICA.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Envelope -->
+  <div class="envelope-container" id="envelopeContainer">
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope">
+        <div class="flap"></div>
+        <div class="back"></div>
+      </div>
+      <div class="letter" id="letter"></div>
+      <div class="envelope-content">
+        <p class="envelope-message" id="envelopeMessage">Clique para abrir<br>nosso convite especial</p>
+        <p class="envelope-guest-name" id="envelopeGuestName"></p>
+      </div>
+      <div class="envelope-seal" id="envelopeSeal">
+        <span class="initials">G&P</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carta -->
+  <div class="page" id="invitePage">
+    <div class="card">
+      <div class="links">
+        <a href="https://sites.google.com/view/gabriele-paulo" target="_blank" class="link-button">
+          <i class="fa-solid fa-square-check"></i> Confirmar Presença
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const envelopeWrapper = document.getElementById('envelopeWrapper');
+    const letter = document.getElementById('letter');
+    const envelopeContainer = document.getElementById('envelopeContainer');
+    const invitePage = document.getElementById('invitePage');
+    const music = document.getElementById('background-music');
+    const envelopeMessage = document.getElementById('envelopeMessage');
+    const envelopeGuestName = document.getElementById('envelopeGuestName');
+
+    invitePage.style.display = 'none';
+
+    envelopeWrapper.addEventListener('click', () => {
+      envelopeWrapper.classList.add('open');
+      letter.classList.add('open');
+      music.play();
+      setTimeout(() => {
+        envelopeContainer.style.opacity = '0';
+        setTimeout(() => {
+          envelopeContainer.style.display = 'none';
+          invitePage.style.display = 'flex';
+        }, 800);
+      }, 800);
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const nome = params.get('convidado');
+    if (nome) {
+        envelopeMessage.textContent = 'convite para';
+        envelopeGuestName.textContent = nome;
+    }
+  </script>
+</body>
+</html>
